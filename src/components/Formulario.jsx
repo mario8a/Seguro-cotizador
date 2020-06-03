@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import styled from '@emotion/styled';
 
+///styled components
 const Campo = styled.div `
     display: flex;
     margin-bottom: 1rem;
@@ -39,7 +40,18 @@ const Button = styled.button `
         background-color: #26C6DA;
         cursor: pointer;
     }
-`
+`;
+
+const Error = styled.div `
+    background-color: red;
+    color: white;
+    padding: 1rem;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+`;
+
+//Fin styled components
 
 
 const Fomulario = () => {
@@ -49,6 +61,7 @@ const Fomulario = () => {
         year: '',
         plan: ''
     });
+    const [error, guardarError] = useState(false);
 
     //extraer valores del state
     const {marca, year, plan} = datos;
@@ -60,9 +73,44 @@ const Fomulario = () => {
             [e.target.name]: e.target.value
         })
     }
+    //cuando el usuario presiona submit
+    const cotizarSeguro = e => {
+        e.preventDefault();
+
+        //validar
+        if(marca.trim() === '' || year.trim() === '' || plan.trim() === '') {
+            guardarError(true);
+            return;
+        }
+
+        guardarError(false);
+
+        //obtener la diferencia de años
+
+        /** Cada vez que sea un aaño anterior va hacer mas barato el seguro
+         * Por cada año hay que restar 3% del valor */
+
+
+        /**-Cada marca va tener un incremento: 
+         * Americano 15%
+         * Europeo 30%
+         * Asiatico 5% */
+
+        /**
+         * EL plan bascico aumenta 20%
+         * Completo: 50%
+        */
+
+        //Total
+
+
+
+    }
 
     return ( 
-        <form action="">
+        <form action="" onSubmit={cotizarSeguro}>
+
+            { error ?  <Error>Todos los campos son obligatorios</Error> : null}
 
             <Campo>
                 <Label>Marca</Label>
@@ -110,7 +158,7 @@ const Fomulario = () => {
                 /> Completo
 
             </Campo>
-            <Button type="button">Cotizar</Button>
+            <Button type="submit">Cotizar</Button>
         </form>
      );
 }
