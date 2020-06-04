@@ -1,6 +1,10 @@
 import React, {useState} from 'react';
 import styled from '@emotion/styled';
 
+import PropTypes from 'prop-types';
+
+import {obtenerDiferenciaYear, calcularMarca, obtenerPlan} from '../helper';
+
 ///styled components
 const Campo = styled.div `
     display: flex;
@@ -54,7 +58,7 @@ const Error = styled.div `
 //Fin styled components
 
 
-const Fomulario = () => {
+const Fomulario = ({guardarResumen, guardarCargando}) => {
 
     const [datos, guardarDatos] = useState({
         marca: '',
@@ -85,23 +89,44 @@ const Fomulario = () => {
 
         guardarError(false);
 
-        //obtener la diferencia de años
+        //una base de 2000
+        let resultado = 2000;
 
+        //obtener la diferencia de años
+        const diferencia = obtenerDiferenciaYear(year);
         /** Cada vez que sea un aaño anterior va hacer mas barato el seguro
          * Por cada año hay que restar 3% del valor */
-
+        resultado -= ((diferencia * 3) * resultado) / 100;
 
         /**-Cada marca va tener un incremento: 
          * Americano 15%
          * Europeo 30%
          * Asiatico 5% */
 
+         resultado = calcularMarca(marca) * resultado;
+ 
         /**
          * EL plan bascico aumenta 20%
          * Completo: 50%
         */
+        const incrementoPlan = obtenerPlan(plan);
+        resultado = parseFloat(incrementoPlan*resultado).toFixed(2)
 
+
+        guardarCargando(true);
+
+        setTimeout(() => {
+            //elimina e spinner
+            guardarCargando(false);
+            //pasa la info al  componene principal
+            guardarResumen({
+                cotizacion: Number(resultado),
+                datos
+            });
+        }, 3000);
         //Total
+
+        
 
 
 
@@ -161,6 +186,11 @@ const Fomulario = () => {
             <Button type="submit">Cotizar</Button>
         </form>
      );
+}
+
+Fomulario.propTypes = {
+    guardarResumen: PropTypes.func.isRequired,
+    guardarCargando: PropTypes.func.isRequired
 }
  
 export default Fomulario;
